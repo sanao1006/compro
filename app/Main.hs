@@ -51,7 +51,7 @@ str :: IO String
 str = getLine
 
 strBS :: IO BC.ByteString
-strBS = strBS
+strBS = BC.getLine
 
 bsToInt :: BC.ByteString -> Int
 bsToInt = fst . fromJust . BC.readInt
