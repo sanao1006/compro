@@ -44,10 +44,10 @@ main = do
 
 -- Input Util
 int :: IO Int
-int = readLn 
+int = BC.getLine >>= return . bsToInt
 
 double :: IO Double
-double = readLn 
+double = BC.getLine >>= return . bsToDouble
 
 str :: IO String
 str = getLine
