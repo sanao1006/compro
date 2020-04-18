@@ -1,4 +1,4 @@
-import qualified Data.ByteString.Char8 as B
+import qualified Data.ByteString.Char8 as BC
 import qualified Data.Vector as V
 import qualified Data.Vector.Unboxed.Mutable as VUM
 import qualified Data.Vector.Unboxed as VU
@@ -10,11 +10,16 @@ import Control.Applicative
 type Graph = V.Vector [(Int,Int)]
 type Distance = VUM.IOVector Int
 type Queue = ST.Set (Int, Int)
+data Direction = Directed | Undirected
  
-buildGraph :: V.Vector (Int, (Int, Int)) -> Int -> Graph
-buildGraph xs n = V.accumulate step (V.replicate n []) xs
+buildGraph :: Direction -> Int -> V.Vector (Int, (Int, Int)) -> Graph
+buildGraph direction vertex pathInfo =
+  case direction of 
+    Directed -> V.accumulate step (V.replicate vertex []) pathInfo
+    Undirected -> V.accumulate step (V.replicate vertex []) pathInfo'
   where
     step xs v = v:xs
+    pathInfo' = pathInfo V.++ (V.map (\(a,(b,c)) -> (b,(a,c))) pathInfo)
  
 dijkstra :: Int -> Int -> Graph -> IO Distance
 dijkstra vertex from graph = do
@@ -48,13 +53,21 @@ dijkstra vertex from graph = do
         a' = a + cost
         q' = ST.insert (a', to) q
 
-toTriple bs = (s, (t, d))
+convToPathInfo bs = (s-1, (t-1, d))
   where 
-      Just (s, bs') = B.readInt bs
-      Just (t, bs'') = B.readInt $ B.dropWhile isSpace bs'
-      Just (d, _) = B.readInt $ B.dropWhile isSpace bs''
+      Just (s, bs') = parseInt bs
+      Just (t, bs'') = parseInt bs'
+      Just (d, _) = parseInt bs'' 
+      parseInt = BC.readInt . BC.dropWhile isSpace
 
 main = do
-  [n,a,b] <- map read . words <$> getLine :: IO [Int]
-  -- 頂点 => (Int (Int, Int)) ... (始点, (次の頂点, 距離))
+  -- n を頂点数、m を辺の数とする
+  -- 辺の情報 => V.Vector (Int (Int, Int)) ... (始点, (次の頂点, 距離))
   -- グラフ => V.Vector (Int, Int) ... インデックス: 頂点, 要素:(次の頂点, 距離)
+  [n,m] <- map read . words <$> getLine :: IO [Int]
+  pathInfo <- V.replicateM m $ BC.getLine >>= return . convToPathInfo
+  let graph = buildGraph Directed n pathInfo
+  --let graph = buildGraph Undirected n pathInfo
+  dist <- dijkstra n 0 graph
+  forM_ [0..n-1] $ \i -> do
+    VUM.read dist i >>= print
