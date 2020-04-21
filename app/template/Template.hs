@@ -119,17 +119,17 @@ mLinesToStrL n = fromMLinesL n BC.unpack
 mLinesToStrBSL :: Int -> IO [BC.ByteString]
 mLinesToStrBSL n = fromMLinesL n id
 
-mLinesToIntV :: Int -> IO (VU.Vector Int)
-mLinesToIntV n = fromMLinesV n bsToInt
-
-mLinesToDoubleV :: Int -> IO (VU.Vector Double)
-mLinesToDoubleV n = fromMLinesV n bsToDouble
-
 mLinesToTupleL :: Int -> IO [(Int, Int)]
 mLinesToTupleL n = fromMLinesL n bsToIntTuple
 
 mLinesToTripleL :: Int -> IO [(Int, Int, Int)]
 mLinesToTripleL n = fromMLinesL n bsToIntTriple
+
+mLinesToIntV :: Int -> IO (VU.Vector Int)
+mLinesToIntV n = fromMLinesV n bsToInt
+
+mLinesToDoubleV :: Int -> IO (VU.Vector Double)
+mLinesToDoubleV n = fromMLinesV n bsToDouble
 
 mLinesToTupleV :: Int -> IO (VU.Vector (Int, Int))
 mLinesToTupleV n = fromMLinesV n bsToIntTuple
