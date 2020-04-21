@@ -66,7 +66,7 @@ bsToIntTuple bs = (a,b)
         Just (a,bs') = parseInt bs
         Just (b,_) = parseInt bs'
 
-bsToIntTriple :: BC.ByteString -> (Int, Int,Int)
+bsToIntTriple :: BC.ByteString -> (Int, Int, Int)
 bsToIntTriple bs = (a,b,c)
     where
         Just (a,bs') = parseInt bs
