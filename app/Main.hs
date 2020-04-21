@@ -53,61 +53,89 @@ str = getLine
 strBS :: IO BC.ByteString
 strBS = BC.getLine
 
+-- convert
 bsToInt :: BC.ByteString -> Int
 bsToInt = fst . fromJust . BC.readInt
 
 bsToDouble :: BC.ByteString -> Double
 bsToDouble = read . BC.unpack
 
+bsToIntTuple :: BC.ByteString -> (Int, Int)
+bsToIntTuple bs = (a,b)
+    where
+        Just (a,bs') = parseInt bs
+        Just (b,_) = parseInt bs'
+
+bsToIntTriple :: BC.ByteString -> (Int, Int,Int)
+bsToIntTriple bs = (a,b,c)
+    where
+        Just (a,bs') = parseInt bs
+        Just (b,bs'') = parseInt bs'
+        Just (c,_) = parseInt bs''
+
 parseInt :: BC.ByteString -> Maybe (Int, BC.ByteString)
 parseInt = BC.readInt . BC.dropWhile isSpace
 
+-- single line
+fromSLineL :: (BC.ByteString -> a) -> IO [a]
+fromSLineL f = strBS >>= return . map f . BC.words
+
+-- from single line to List / VU.Vector 
 sLineToIntL :: IO [Int]
-sLineToIntL = strBS >>= return . map bsToInt . BC.words
+sLineToIntL = fromSLineL bsToInt
 
 sLineToDoubleL :: IO [Double]
-sLineToDoubleL = strBS >>= return . map bsToDouble . BC.words
+sLineToDoubleL = fromSLineL bsToDouble
+
+sLineToStrL :: IO [String]
+sLineToStrL = fromSLineL BC.unpack
+
+sLineToStrBSL :: IO [BC.ByteString]
+sLineToStrBSL = fromSLineL id 
 
 sLineToIntV :: Int -> IO (VU.Vector Int)
-sLineToIntV n = strBS >>= return . VU.unfoldrN n parseInt
+sLineToIntV n = BC.getLine >>= return . VU.unfoldrN n parseInt
 
 sLineToDoubleV :: IO (VU.Vector Double)
-sLineToDoubleV = strBS >>= return . VU.fromList . map bsToDouble . BC.words
+sLineToDoubleV = BC.getLine >>= return . VU.fromList . map bsToDouble . BC.words
 
+-- multiple lines
+fromMLinesL :: Int -> (BC.ByteString -> a) -> IO [a]
+fromMLinesL n f = replicateM n (strBS >>= return . f)
+
+fromMLinesV :: VU.Unbox a => Int -> (BC.ByteString -> a) -> IO (VU.Vector a)
+fromMLinesV n f = VU.replicateM n (strBS >>= return . f)
+
+-- from multiple lines to List / VU.Vector
 mLinesToIntL :: Int -> IO [Int]
-mLinesToIntL n = replicateM n (strBS >>= return . bsToInt)
+mLinesToIntL n = fromMLinesL n bsToInt
 
 mLinesToDoubleL :: Int -> IO [Double]
-mLinesToDoubleL n = replicateM n (strBS >>= return . bsToDouble)
+mLinesToDoubleL n = fromMLinesL n bsToDouble
+
+mLinesToStrL :: Int -> IO [String]
+mLinesToStrL n = fromMLinesL n BC.unpack
+
+mLinesToStrBSL :: Int -> IO [BC.ByteString]
+mLinesToStrBSL n = fromMLinesL n id
 
 mLinesToIntV :: Int -> IO (VU.Vector Int)
-mLinesToIntV n = VU.replicateM n (strBS >>= return . bsToInt)
+mLinesToIntV n = fromMLinesV n bsToInt
 
 mLinesToDoubleV :: Int -> IO (VU.Vector Double)
-mLinesToDoubleV n = VU.replicateM n (strBS >>= return . bsToDouble)
+mLinesToDoubleV n = fromMLinesV n bsToDouble
 
 mLinesToTupleL :: Int -> IO [(Int, Int)]
-mLinesToTupleL n = replicateM n (strBS >>= return . (\[a,b] -> (a,b)) . map bsToInt . BC.words)
+mLinesToTupleL n = fromMLinesL n bsToIntTuple
 
 mLinesToTripleL :: Int -> IO [(Int, Int, Int)]
-mLinesToTripleL n = replicateM n (strBS >>= return . (\[a,b,c] -> (a,b,c)) . map bsToInt . BC.words)
+mLinesToTripleL n = fromMLinesL n bsToIntTriple
 
 mLinesToTupleV :: Int -> IO (VU.Vector (Int, Int))
-mLinesToTupleV n = VU.replicateM n $ do
-    bs <- strBS
-    let
-        Just (a, bs') = parseInt bs
-        Just (b, _) = parseInt bs'
-    return (a,b)
+mLinesToTupleV n = fromMLinesV n bsToIntTuple
     
 mLinesToTripleV :: Int -> IO (VU.Vector (Int, Int, Int))
-mLinesToTripleV n = VU.replicateM n $ do
-    bs <- strBS
-    let
-        Just (a, bs') = parseInt bs
-        Just (b, bs'') = parseInt bs'
-        Just (c, _) = parseInt bs''
-    return (a,b,c)
+mLinesToTripleV n = fromMLinesV n bsToIntTriple
 
 -- output
 yesnoL :: Bool -> IO ()
