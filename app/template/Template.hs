@@ -48,7 +48,7 @@ double :: IO Double
 double = BC.getLine >>= return . bsToDouble
 
 str :: IO String
-str = getLine
+str = BC.getLine >>= return . BC.unpack
 
 strBS :: IO BC.ByteString
 strBS = BC.getLine
