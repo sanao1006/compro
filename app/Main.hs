@@ -3,6 +3,10 @@
 --{-# LANGUAGE FlexibleContexts #-}
 --{-# LANGUAGE ViewPatterns #-}
 --{-# LANGUAGE OverloadedStrings #-}
+--{-# LANGUAGE Strict #-}
+--{-# LANGUAGE NumericUnderscores #-}
+--{-# LANGUAGE BlockArguments #-}
+--{-# LANGUAGE MultiWayIf #-}
 
 import qualified Data.Vector as V
 import qualified Data.Vector.Unboxed as VU
