@@ -6,10 +6,13 @@
     - 入力の関数のうち、いくつかをリファクタリングした
     - `String`型と`ByteString`型のリストを生成する関数を追加した
     - `String`型の入力を変更
+- ダイクストラ法のコードを改良 [#1](https://github.com/jueve/compro/issues/2)
+    - 辺の情報を構築する関数を`convToPathInfo`に変更
+    - グラフを構築する`buildGraph`関数を修正。有向、無向に対応できるようにした。
+    - main関数で使用例を具体的に記述した。
 - GHC拡張の追加 [#4](https://github.com/jueve/compro/issues/4)
 
 ## バグ修正など
-- ダイクストラ法のコードを修正 [#1](https://github.com/jueve/compro/issues/2)
 - ライセンス表記の修正[#7](https://github.com/jueve/compro/issues/7)
 
 
