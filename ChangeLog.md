@@ -1,5 +1,11 @@
 # Changelog
 
+# 0.1.0
+- ダイクストラ法のコードを修正 [#1](https://github.com/jueve/compro/issues/2)
+- 入力ライブラリのリファクタリング [#2](https://github.com/jueve/compro/issues/1)
+- GHC拡張の追加 [#4](https://github.com/jueve/compro/issues/4)
+- ライセンス表記の修正[#7](https://github.com/jueve/compro/issues/7)
+
 # 0.0.4
 Int, Double型の読み込みを変更
 - `app/template/Template.hs`の`int`
