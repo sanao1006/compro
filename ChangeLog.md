@@ -1,10 +1,17 @@
 # Changelog
 
 # 0.1.0
-- ダイクストラ法のコードを修正 [#1](https://github.com/jueve/compro/issues/2)
+## 新機能など
 - 入力ライブラリのリファクタリング [#2](https://github.com/jueve/compro/issues/1)
+    - 入力の関数のうち、いくつかをリファクタリングした
+    - `String`型と`ByteString`型のリストを生成する関数を追加した
+    - `String`型の入力を変更
 - GHC拡張の追加 [#4](https://github.com/jueve/compro/issues/4)
+
+## バグ修正など
+- ダイクストラ法のコードを修正 [#1](https://github.com/jueve/compro/issues/2)
 - ライセンス表記の修正[#7](https://github.com/jueve/compro/issues/7)
+
 
 # 0.0.4
 Int, Double型の読み込みを変更
