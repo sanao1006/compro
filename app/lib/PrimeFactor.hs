@@ -1,8 +1,8 @@
 import qualified Data.Map as MP
 
 -- 素因数分解
-primeFactor :: MP.Map Int Int -> Int -> MP.Map Int Int
-primeFactor m n = loop n 2 m
+primeFactorization :: MP.Map Int Int -> Int -> MP.Map Int Int
+primeFactorization m n = loop n 2 m
     where
         loop :: Int -> Int -> MP.Map Int Int ->  MP.Map Int Int
         loop n i m
