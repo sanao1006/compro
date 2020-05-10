@@ -12,6 +12,7 @@ import qualified Data.Vector as V
 import qualified Data.Vector.Unboxed as VU
 import qualified Data.Vector.Unboxed.Mutable as VUM
 import qualified Data.ByteString.Char8 as BC
+import qualified Data.Map.Strict as MPS
 import qualified Data.Map as MP
 import qualified Data.Set as ST
 import qualified Data.Sequence as SQ
@@ -32,6 +33,7 @@ import Data.STRef
 import Control.Applicative
 import Control.Monad
 import Control.Monad.ST
+import Control.Monad.State.Strict
 import Debug.Trace
 -- import qualified Data.Vector.Algorithms.Merge as VAM
 -- import qualified Data.Heap as HP
