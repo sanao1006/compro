@@ -169,3 +169,9 @@ toDouble x = fromIntegral x
 
 toInt :: Double -> Int
 toInt x = floor x
+
+sqToList :: SQ.Seq a -> [a]
+sqToList sq =
+    case SQ.viewl sq of
+        l SQ.:< sq' -> l : sqToList sq'
+        SQ.EmptyL -> []
