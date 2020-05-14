@@ -48,13 +48,13 @@ main = do
 
 -- Input Util
 int :: IO Int
-int = BC.getLine >>= return . bsToInt
+int = bsToInt <$> BC.getLine
 
 double :: IO Double
-double = BC.getLine >>= return . bsToDouble
+double = bsToDouble <$> BC.getLine
 
 str :: IO String
-str = BC.getLine >>= return . BC.unpack
+str = BC.unpack <$> BC.getLine
 
 strBS :: IO BC.ByteString
 strBS = BC.getLine
@@ -84,9 +84,9 @@ parseInt = BC.readInt . BC.dropWhile isSpace
 
 -- single line
 fromSLineL :: (BC.ByteString -> a) -> IO [a]
-fromSLineL f = strBS >>= return . map f . BC.words
+fromSLineL f =  map f . BC.words <$> strBS
 
--- from single line to List / VU.Vector 
+-- from single line to List / VU.Vector
 sLineToIntL :: IO [Int]
 sLineToIntL = fromSLineL bsToInt
 
@@ -97,20 +97,20 @@ sLineToStrL :: IO [String]
 sLineToStrL = fromSLineL BC.unpack
 
 sLineToStrBSL :: IO [BC.ByteString]
-sLineToStrBSL = fromSLineL id 
+sLineToStrBSL = fromSLineL id
 
 sLineToIntV :: Int -> IO (VU.Vector Int)
-sLineToIntV n = BC.getLine >>= return . VU.unfoldrN n parseInt
+sLineToIntV n = VU.unfoldrN n parseInt <$> BC.getLine
 
 sLineToDoubleV :: IO (VU.Vector Double)
-sLineToDoubleV = BC.getLine >>= return . VU.fromList . map bsToDouble . BC.words
+sLineToDoubleV = VU.fromList . map bsToDouble . BC.words <$> BC.getLine
 
 -- multiple lines
 fromMLinesL :: Int -> (BC.ByteString -> a) -> IO [a]
-fromMLinesL n f = replicateM n (strBS >>= return . f)
+fromMLinesL n f = replicateM n (f <$> strBS)
 
 fromMLinesV :: VU.Unbox a => Int -> (BC.ByteString -> a) -> IO (VU.Vector a)
-fromMLinesV n f = VU.replicateM n (strBS >>= return . f)
+fromMLinesV n f = VU.replicateM n (f <$> strBS)
 
 -- from multiple lines to List / VU.Vector
 mLinesToIntL :: Int -> IO [Int]
@@ -139,7 +139,7 @@ mLinesToDoubleV n = fromMLinesV n bsToDouble
 
 mLinesToTupleV :: Int -> IO (VU.Vector (Int, Int))
 mLinesToTupleV n = fromMLinesV n bsToIntTuple
-    
+
 mLinesToTripleV :: Int -> IO (VU.Vector (Int, Int, Int))
 mLinesToTripleV n = fromMLinesV n bsToIntTriple
 
@@ -162,13 +162,13 @@ chrToStr :: Char -> String
 chrToStr x = [x]
 
 m1 :: Int -> Int
-m1 x = subtract 1 x
+m1 = subtract 1
 
 toDouble :: Int -> Double
-toDouble x = fromIntegral x
+toDouble = fromIntegral
 
 toInt :: Double -> Int
-toInt x = floor x
+toInt = floor
 
 sqToList :: SQ.Seq a -> [a]
 sqToList sq =
