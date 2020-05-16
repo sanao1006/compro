@@ -6,7 +6,9 @@ import qualified Data.Set as ST
 import Data.Char
 import Control.Monad
 import Control.Applicative
- 
+
+-- 辺の情報 => V.Vector (Int (Int, Int)) ... (始点, (次の頂点, 距離))
+-- グラフ => V.Vector (Int, Int) ... インデックス: 頂点, 要素:(次の頂点, 距離)
 type Graph = V.Vector [(Int,Int)]
 type Distance = VUM.IOVector Int
 type Queue = ST.Set (Int, Int)
@@ -15,59 +17,39 @@ data Direction = Directed | Undirected
 buildGraph :: Direction -> Int -> V.Vector (Int, (Int, Int)) -> Graph
 buildGraph direction vertex pathInfo =
   case direction of 
-    Directed -> V.accumulate step (V.replicate vertex []) pathInfo
-    Undirected -> V.accumulate step (V.replicate vertex []) pathInfo'
+    Directed   -> V.accumulate f (V.replicate vertex []) pathInfo
+    Undirected -> V.accumulate f (V.replicate vertex []) pathInfo'
   where
-    step xs v = v:xs
-    pathInfo' = pathInfo V.++ (V.map (\(a,(b,c)) -> (b,(a,c))) pathInfo)
+    f = flip (:)
+    g (a,(b,c)) = (b,(a,c))
+    pathInfo' = pathInfo V.++ V.map g pathInfo
  
 dijkstra :: Int -> Int -> Graph -> IO Distance
 dijkstra vertex from graph = do
   distance <- VUM.replicate vertex (10^9) :: IO Distance
   VUM.write distance from 0 
-  trav graph distance (ST.singleton (0, from))
+  go graph distance (ST.singleton (0, from))
+
+go :: Graph -> Distance -> Queue -> IO Distance
+go graph distance queue
+  | ST.null queue = return distance
+  | otherwise = do
+      tmp <- VUM.read distance from
+      case compare acc tmp of
+        LT -> updateQueue from acc vs distance queue' >>= go graph distance
+        EQ -> updateQueue from acc vs distance queue' >>= go graph distance
+        GT -> go graph distance queue'
   where
-    trav :: Graph -> Distance -> Queue -> IO Distance
-    trav graph distance queue
-      | ST.null queue = return distance
-      | otherwise = do
-          tmp <- VUM.read distance from
-          case compare acc tmp of
-            LT -> update from acc distance queue' >>= trav graph distance
-            EQ -> update from acc distance queue' >>= trav graph distance
-            GT -> trav graph distance queue'
-      where
-        ((acc, from), queue') = ST.deleteFindMin queue
+    ((acc, from), queue') = ST.deleteFindMin queue
+    vs = graph V.! from
  
-    update :: Int -> Int -> Distance -> Queue -> IO Queue
-    update f a dist q = update' a dist (graph V.! f) q
-
-    update' :: Int -> Distance -> [(Int, Int)] -> Queue -> IO Queue
-    update' _ _ [] q = return q
-    update' a dist ((to, cost):xs) q = do
-      tmp <- VUM.read dist to
-      case compare a' tmp of
-        LT -> VUM.write dist to a' >> update' a dist xs q'
-        _ -> update' a dist xs q
+updateQueue :: Int -> Int -> [(Int, Int)] -> Distance -> Queue -> IO Queue
+updateQueue _ _ [] _ queue = return queue
+updateQueue from acc ((to, cost):xs) distance queue = do
+    tmp <- VUM.read distance to
+    case compare acc' tmp of
+        LT -> VUM.write distance to acc' >> updateQueue from acc xs distance queue'
+        _  -> updateQueue from acc xs distance queue
       where
-        a' = a + cost
-        q' = ST.insert (a', to) q
-
-convToPathInfo bs = (s-1, (t-1, d))
-  where 
-      Just (s, bs') = parseInt bs
-      Just (t, bs'') = parseInt bs'
-      Just (d, _) = parseInt bs'' 
-      parseInt = BC.readInt . BC.dropWhile isSpace
-
-main = do
-  -- n を頂点数、m を辺の数とする
-  -- 辺の情報 => V.Vector (Int (Int, Int)) ... (始点, (次の頂点, 距離))
-  -- グラフ => V.Vector (Int, Int) ... インデックス: 頂点, 要素:(次の頂点, 距離)
-  [n,m] <- map read . words <$> getLine :: IO [Int]
-  pathInfo <- V.replicateM m $ BC.getLine >>= return . convToPathInfo
-  let graph = buildGraph Directed n pathInfo
-  --let graph = buildGraph Undirected n pathInfo
-  dist <- dijkstra n 0 graph
-  forM_ [0..n-1] $ \i -> do
-    VUM.read dist i >>= print
+        acc' = acc + cost
+        queue' = ST.insert (acc', to) queue
