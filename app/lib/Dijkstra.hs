@@ -6,7 +6,9 @@ import qualified Data.Set as ST
 import Data.Char
 import Control.Monad
 import Control.Applicative
- 
+
+-- 辺の情報 => V.Vector (Int (Int, Int)) ... (始点, (次の頂点, 距離))
+-- グラフ => V.Vector (Int, Int) ... インデックス: 頂点, 要素:(次の頂点, 距離)
 type Graph = V.Vector [(Int,Int)]
 type Distance = VUM.IOVector Int
 type Queue = ST.Set (Int, Int)
@@ -51,22 +53,3 @@ updateQueue from acc ((to, cost):xs) distance queue = do
       where
         acc' = acc + cost
         queue' = ST.insert (acc', to) queue
-
-convToPathInfo bs = (s-1, (t-1, d))
-  where 
-      Just (s, bs') = parseInt bs
-      Just (t, bs'') = parseInt bs'
-      Just (d, _) = parseInt bs'' 
-      parseInt = BC.readInt . BC.dropWhile isSpace
-
-main = do
-  -- n を頂点数、m を辺の数とする
-  -- 辺の情報 => V.Vector (Int (Int, Int)) ... (始点, (次の頂点, 距離))
-  -- グラフ => V.Vector (Int, Int) ... インデックス: 頂点, 要素:(次の頂点, 距離)
-  [n,m] <- map read . words <$> getLine :: IO [Int]
-  pathInfo <- V.replicateM m $ BC.getLine >>= return . convToPathInfo
-  let graph = buildGraph Directed n pathInfo
-  --let graph = buildGraph Undirected n pathInfo
-  dist <- dijkstra n 0 graph
-  forM_ [0..n-1] $ \i -> do
-    VUM.read dist i >>= print
