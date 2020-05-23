@@ -35,11 +35,14 @@ import Control.Monad
 import Control.Monad.ST
 import Control.Monad.State.Strict
 import Debug.Trace
+-- import qualified Data.OrdPSQ as PSQ
 -- import qualified Data.Vector.Algorithms.Merge as VAM
 -- import qualified Data.Heap as HP
 -- import Numeric.Extra
 -- import Data.Tuple.Extra
 -- import Data.List.Extra
+
+-- data OrdQ = Ascending | Descending
 
 --------------------------------------------------------------------------
 main = do
@@ -182,3 +185,22 @@ sqToList sq =
 --     VAM.sort w
 --     return w
 
+-- buildPQL :: Ord a => OrdQ -> [a] -> PSQ.OrdPSQ Int Int a
+-- buildPQL oq xs =
+--     case oq of
+--         Ascending -> f $ zip3 [1..l] [1..l] $ sort xs
+--         Descending -> f $ zip3  [1..l] (map negate [1..l]) $ sort xs
+--     where
+--         l = length xs
+--         f = foldl' g PSQ.empty
+--         g acc (k,p,v) = PSQ.insert k p v acc
+--
+-- buildPQV :: (Ord a, VU.Unbox a) => OrdQ -> VU.Vector a -> PSQ.OrdPSQ Int Int a
+-- buildPQV oq xs =
+--     case oq of
+--         Ascending -> f $ VU.zip3 (VU.generate l (+1)) (VU.generate l (+1)) $ sortV xs
+--         Descending -> f $ VU.zip3  (VU.generate l (+1)) (VU.generate l $ negate . (+1)) $ sortV xs
+--     where
+--         l = VU.length xs
+--         f = VU.foldl' g PSQ.empty
+--         g acc (k,p,v) = PSQ.insert k p v acc
