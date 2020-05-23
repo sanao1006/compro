@@ -175,3 +175,9 @@ sqToList sq =
     case SQ.viewl sq of
         l SQ.:< sq' -> l : sqToList sq'
         SQ.EmptyL -> []
+
+-- sortV :: (Ord a, VU.Unbox a) => VU.Vector a -> VU.Vector a
+-- sortV v = VU.create $ do
+--     w <- VU.thaw v
+--     VAM.sort w
+--     return w
