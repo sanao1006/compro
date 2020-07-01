@@ -35,12 +35,12 @@ import Control.Monad
 import Control.Monad.ST
 import Control.Monad.State.Strict
 import Debug.Trace
--- import qualified Data.OrdPSQ as PSQ
--- import qualified Data.Vector.Algorithms.Merge as VAM
--- import qualified Data.Heap as HP
--- import Numeric.Extra
--- import Data.Tuple.Extra
--- import Data.List.Extra
+import qualified Data.OrdPSQ as PSQ
+import qualified Data.Vector.Algorithms.Merge as VAM
+import qualified Data.Heap as HP
+import Numeric.Extra
+import Data.Tuple.Extra
+import Data.List.Extra
 
 -- data OrdQ = Ascending | Descending
 
