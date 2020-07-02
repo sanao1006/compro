@@ -42,7 +42,7 @@ import Numeric.Extra
 import Data.Tuple.Extra
 import Data.List.Extra
 
--- data OrdQ = Ascending | Descending
+data OrdQ = Ascending | Descending
 
 --------------------------------------------------------------------------
 main = do
@@ -179,28 +179,28 @@ sqToList sq =
         l SQ.:< sq' -> l : sqToList sq'
         SQ.EmptyL -> []
 
--- sortV :: (Ord a, VU.Unbox a) => VU.Vector a -> VU.Vector a
--- sortV v = VU.create $ do
---     w <- VU.thaw v
---     VAM.sort w
---     return w
+sortV :: (Ord a, VU.Unbox a) => VU.Vector a -> VU.Vector a
+sortV v = VU.create $ do
+    w <- VU.thaw v
+    VAM.sort w
+    return w
 
--- buildPQL :: Ord a => OrdQ -> [a] -> PSQ.OrdPSQ Int Int a
--- buildPQL oq xs =
---     case oq of
---         Ascending -> f $ zip3 [1..l] [1..l] $ sort xs
---         Descending -> f $ zip3  [1..l] (map negate [1..l]) $ sort xs
---     where
---         l = length xs
---         f = foldl' g PSQ.empty
---         g acc (k,p,v) = PSQ.insert k p v acc
---
--- buildPQV :: (Ord a, VU.Unbox a) => OrdQ -> VU.Vector a -> PSQ.OrdPSQ Int Int a
--- buildPQV oq xs =
---     case oq of
---         Ascending -> f $ VU.zip3 (VU.generate l (+1)) (VU.generate l (+1)) $ sortV xs
---         Descending -> f $ VU.zip3  (VU.generate l (+1)) (VU.generate l $ negate . (+1)) $ sortV xs
---     where
---         l = VU.length xs
---         f = VU.foldl' g PSQ.empty
---         g acc (k,p,v) = PSQ.insert k p v acc
+buildPQL :: Ord a => OrdQ -> [a] -> PSQ.OrdPSQ Int Int a
+buildPQL oq xs =
+    case oq of
+        Ascending -> f $ zip3 [1..l] [1..l] $ sort xs
+        Descending -> f $ zip3  [1..l] (map negate [1..l]) $ sort xs
+    where
+        l = length xs
+        f = foldl' g PSQ.empty
+        g acc (k,p,v) = PSQ.insert k p v acc
+
+buildPQV :: (Ord a, VU.Unbox a) => OrdQ -> VU.Vector a -> PSQ.OrdPSQ Int Int a
+buildPQV oq xs =
+    case oq of
+        Ascending -> f $ VU.zip3 (VU.generate l (+1)) (VU.generate l (+1)) $ sortV xs
+        Descending -> f $ VU.zip3  (VU.generate l (+1)) (VU.generate l $ negate . (+1)) $ sortV xs
+    where
+        l = VU.length xs
+        f = VU.foldl' g PSQ.empty
+        g acc (k,p,v) = PSQ.insert k p v acc
